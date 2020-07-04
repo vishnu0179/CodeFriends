@@ -3,9 +3,11 @@ const app = express()
 
 const port = process.env.PORT  || 5500
 
-app.get('/', (req, res)=> {
-    res.send('Home');
-})
+const user = require('./routes/user')
+
+app.use('/user' ,user);
+
+app.use(express.json());
 
 app.get('/ping', (req, res)=> {
     res.send('Success')
