@@ -3,13 +3,13 @@ var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
+const user = require('./routes/user')
+
 app.set('port', (process.env.PORT || 5000));
 
+app.use(express.json())
 
-// views is directory for all template files
-
-
-console.log("outside io");
+app.use('/user', user);
 
 io.on('connection', function(socket){
 
@@ -30,6 +30,12 @@ io.on('connection', function(socket){
     io.emit('chat message', msg);
   });
 });
+
+
+app.get('/ping',(req, res)=> {
+    res.send("Successful")
+})
+
 
 http.listen(app.get('port'), function() {
   console.log('Node app is running on port', app.get('port'));

@@ -1,7 +1,7 @@
 const axios = require('axios')
 const CircularJSON = require('circular-json')
 module.exports = async(username) => {
-    let result, r;
+    let result, data;
     try{
         let url = "http://codeforces.com/api/user.info?handles=" + username
          result = await axios.get(url);
