@@ -1,7 +1,7 @@
 const mysql = require('mysql')
 const dbConfig = require('../config/db.config.js')
 
-const mysqlConnection = mysql.createPool({
+const mysqlConnection = mysql.createConnection({
     host: dbConfig.HOST,
     user: dbConfig.USER,
     password: dbConfig.PASSWORD,
