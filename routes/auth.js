@@ -1,33 +1,13 @@
-const mysql = require('mysql');
-const express = require('express');
-var app = express();
-const bodyparser = require('body-parser');
-app.use(bodyparser.urlencoded({ extended: true }));
-app.use(bodyparser.json());
-var mysqlConnection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'root',
-    database: 'projectDB',
-    multipleStatements: true
+const express = require('express')
+const router = express.Router()
 
-});
+const mysqlConnection = require("../models/db.js");
 
-mysqlConnection.connect((err) => {
-    if (!err)
-        console.log('DB connection succesfull');
-    else
-        console.log('DB connection failed\n Error : ' + JSON.stringify(err, undefined, 2));
-});
-
-app.listen(3000, () => console.log('Server up and running at port 3000'));
-
-app.post('/login', (req, res) => {
+router.post('/login', (req, res) => {
     // let user = req.body;
-
     let data = req.body;
-    let sql = "SELECT password from project1 where username = ?";
-    // mysqlConnection.query(sql,[user.fullname,user.chef,user.forces,user.username,user.password],(err)=>{
+    let sql = "SELECT password from project where username = ?";
+    // mysqlConnection.query(sql,[user.fullname,user.forces,user.username,user.password],(err)=>{
     mysqlConnection.query(sql, [data.username], (err, result) => {
         if (!err) {
             if (result.length > 0) {
@@ -35,7 +15,6 @@ app.post('/login', (req, res) => {
                     res.json({
                         status: true,
                         message: "successfully authenticated"
-
                     });
                 }
                 else {
@@ -44,7 +23,6 @@ app.post('/login', (req, res) => {
                         message: "Email and password don't match"
                     });
                 }
-
             }
             else{
                 res.json({
@@ -53,7 +31,6 @@ app.post('/login', (req, res) => {
                 });
             }
         }
-
         else {
            res.json({
                status:false,
@@ -62,5 +39,34 @@ app.post('/login', (req, res) => {
         }
     });
 
-
+    res.end()
 });
+
+router.post('/register', (req, res) => {
+    let data = req.body;
+    console.log(data);
+
+    let sql = "Insert into project  set ?";
+
+
+    mysqlConnection.query(sql, data, (err, result) => {
+        if (!err) {
+            res.json({
+                message: "Successfull"
+            });
+            console.log('Inserted succesfully');
+            
+        }
+        else {
+            res.json({
+                message: "Not Successfull"
+            });
+            console.log('Error:' + JSON.stringify(err, undefined, 2));
+        }
+    });
+
+    //res.end();
+
+})
+
+module.exports = router
