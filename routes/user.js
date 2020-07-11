@@ -12,11 +12,11 @@ router.get('/:id', async (req, res)=>{
     let result = await checkUser(userName);
     let data = await JSON.parse(result)
     //console.log(data)
-    res.send(data)
+    res.send(data.data)
 
 })
 
-// /user/vishnu0179?contest=1374&problem=A
+// /user/problemStatus/vishnu0179?contest=1374&problem=A
 router.get('/problemStatus/:id',async (req, res)=> {
 
     let handle = req.params.id;
