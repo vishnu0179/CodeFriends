@@ -1,5 +1,6 @@
 const mysql = require('mysql');
 const express = require('express');
+const jwt = require('jsonwebtoken');
 var app = express();
 const bodyparser = require('body-parser');
 app.use(bodyparser.urlencoded({ extended: true }));
@@ -23,19 +24,34 @@ mysqlConnection.connect((err) => {
 app.listen(3000, () => console.log('Server up and running at port 3000'));
 
 app.post('/login', (req, res) => {
-    // let user = req.body;
 
     let data = req.body;
     let sql = "SELECT password from project1 where username = ?";
-    // mysqlConnection.query(sql,[user.fullname,user.chef,user.forces,user.username,user.password],(err)=>{
+    
+    const token = jwt.sign(data, 'secret key');
     mysqlConnection.query(sql, [data.username], (err, result) => {
         if (!err) {
             if (result.length > 0) {
+               
                 if (data.password === result[0].password) {
-                    res.json({
-                        status: true,
-                        message: "successfully authenticated"
+                    
+                    //TOKEN SAVED IN DATABASE
+                    let q1 = "Insert into tokeninfo (username,token) values (?,?)";
+                    mysqlConnection.query(q1, [data.username, token], (err) => {
+                        if(!err){
+                            res.header('auth', token).send(token);
+                            console.log("token saved");
+                        }
+                        else if (err.code === "ER_DUP_ENTRY") {
+                            res.json({
+                                message: "You are already logged in."
+                            });
+                        }
 
+                        else if (err.code!=="ER_DUP_ENTRY")
+                            console.log("Query could not be completed" + JSON.stringify(err, undefined, 2));
+                        
+                            
                     });
                 }
                 else {
@@ -46,19 +62,21 @@ app.post('/login', (req, res) => {
                 }
 
             }
-            else{
+            else {
                 res.json({
                     status: false,
-                    message:"Email not found"
+                    message: "Email not found"
                 });
             }
         }
 
         else {
-           res.json({
-               status:false,
-               message: 'authentication failed'
-           });
+
+
+            res.json({
+                status: false,
+                message: 'authentication failed'
+            });
         }
     });
 

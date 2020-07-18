@@ -1,12 +1,12 @@
 const express = require('express')
 const router = express.Router()
-
+const verify = require('../verify.js');
 const checkUser = require('../scripts/checkUser')
 const checkProblemStatus = require('../scripts/getProblemStatus')
 const getUserContests = require('../scripts/getUserContestHistory')
 
 
-router.get('/:id', async (req, res)=>{
+router.get('/:id',verify, async (req, res)=>{
     let userName  = req.params.id
         
     let result = await checkUser(userName);
@@ -17,7 +17,7 @@ router.get('/:id', async (req, res)=>{
 })
 
 // /user/vishnu0179?contest=1374&problem=A
-router.get('/problemStatus/:id',async (req, res)=> {
+router.get('/problemStatus/:id',verify,async (req, res)=> {
 
     let handle = req.params.id;
     let contestId = req.query.contest;
@@ -35,7 +35,7 @@ router.get('/problemStatus/:id',async (req, res)=> {
 
 })
 
-router.get('/contests/:id',async (req, res)=>{
+router.get('/contests/:id',verify,async (req, res)=>{
 
     let handle = req.params.id;
     let contestHistory = await getUserContests(handle);
