@@ -25,6 +25,7 @@ io.on('connection', function(socket){
 
   socket.on('on typing', function(typing){
     console.log("Typing.... ");
+    console.log(typing);
     io.emit('on typing', typing);
   });
 
